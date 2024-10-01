@@ -309,3 +309,59 @@ TEST(TBitField, bitfields_with_different_bits_are_not_equal)
 
   EXPECT_NE(bf1, bf2);
 }
+TEST(TBitField, doulbe_negative)
+{
+	TBitField bf(3), neg_negbf(3);
+
+	neg_negbf = ~(~neg_negbf );
+
+	EXPECT_EQ(bf, neg_negbf);
+}
+TEST(TBitField, associativity_operator_and)
+{
+  TBitField bf1(4), bf2(4);
+
+  bf1.SetBit(0);
+  bf1.SetBit(3);
+
+  bf2.SetBit(0);
+  bf2.SetBit(3);
+
+  EXPECT_EQ(bf1 & bf2, bf2 & bf1);
+}
+TEST(TBitField, associativity_operator_or)
+{
+TBitField bf1(4), bf2(4);
+
+  bf1.SetBit(0);
+  bf1.SetBit(3);
+
+  bf2.SetBit(0);
+  bf2.SetBit(3);
+
+  EXPECT_EQ(bf1 | bf2, bf2 | bf1);
+}
+TEST(TBitField, associativity_operator_equality)
+{
+TBitField bf1(4), bf2(4);
+
+  bf1.SetBit(0);
+  bf1.SetBit(3);
+
+  bf2.SetBit(0);
+  bf2.SetBit(3);
+
+  EXPECT_EQ(bf1 == bf2, bf2 == bf1);
+}
+TEST(TBitField, associativity_operator_inequality)
+{
+TBitField bf1(4), bf2(4);
+
+  bf1.SetBit(0);
+  bf1.SetBit(3);
+
+  bf2.SetBit(0);
+  bf2.SetBit(3);
+
+  EXPECT_EQ(bf1 != bf2, bf2 != bf1);
+}

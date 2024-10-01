@@ -295,3 +295,101 @@ TEST(TSet, check_negation_operator)
 
   EXPECT_EQ(expSet, set1);
 }
+TEST(TSet, throws_when_negative_index_in_IsMember)
+{
+  TSet set(4);
+
+  ASSERT_ANY_THROW(set.IsMember(-3));
+}
+TEST(TSet, throws_when_negative_index_in_InsElem)
+{
+  TSet set(4);
+
+  ASSERT_ANY_THROW(set.InsElem(-3));
+}
+TEST(TSet, throws_when_negative_index_in_DelElem)
+{
+  TSet set(4);
+
+  ASSERT_ANY_THROW(set.DelElem(-3));
+}
+TEST(TSet, correct_IsMember)
+{
+  TSet set(5);
+
+  set.InsElem(2);
+
+  EXPECT_EQ(set.IsMember(2), 1);
+  EXPECT_EQ(set.IsMember(3), 0);
+}
+TEST(TSet, correct_InsElem)
+{
+  TSet set(5);
+
+  set.InsElem(2);
+
+  EXPECT_EQ(set.IsMember(2), 1);
+}
+TEST(TSet, correct_DelElem)
+{
+  TSet set(5);
+
+  set.DelElem(2);
+
+  EXPECT_EQ(set.IsMember(2), 0);
+}
+TEST(TSet, associativity_operator_and)
+{
+  TSet set1(5), set2(5);
+
+  set1.InsElem(1);
+  set1.InsElem(3);
+  set2.InsElem(1);
+  set2.InsElem(2);
+
+  EXPECT_EQ(set1 * set2, set2 * set1);
+}
+TEST(TSet, associativity_operator_or)
+{
+  TSet set1(5), set2(5);
+
+  set1.InsElem(1);
+  set1.InsElem(3);
+  set2.InsElem(1);
+  set2.InsElem(2);
+
+  EXPECT_EQ(set1 + set2, set2 + set1);
+}
+TEST(TSet, associativity_operator_equality)
+{
+  TSet set1(5), set2(5);
+
+  set1.InsElem(1);
+  set1.InsElem(3);
+  set2.InsElem(1);
+  set2.InsElem(2);
+
+  EXPECT_EQ(set1 == set2, set2 == set1);
+}
+TEST(TSet, associativity_operator_inequality)
+{
+  TSet set1(5), set2(5);
+
+  set1.InsElem(1);
+  set2.InsElem(3);
+  set2.InsElem(1);
+  set2.InsElem(2);
+
+  EXPECT_EQ(set1 != set2, set2 != set1);
+}
+TEST(TSet, correct_operator_negative_and_operator_and)
+{
+  TSet set(5), neg_set(5), set_full(5);
+
+  set.InsElem(2);
+  set_full = ~set_full;
+  neg_set = ~set;
+
+  EXPECT_EQ(neg_set + 2, set_full);
+}
+
