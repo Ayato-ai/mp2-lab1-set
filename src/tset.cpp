@@ -12,7 +12,7 @@ static const int FAKE_INT = -1;
 static TBitField FAKE_BITFIELD(1);
 static TSet FAKE_SET(1);
 
-TSet::TSet(int mp): MaxPower(mp), BitField(TBitField(mp))
+TSet::TSet(int mp): MaxPower(mp), BitField(mp)
 {
 }
 
@@ -27,8 +27,7 @@ TSet::TSet(const TBitField &bf) : MaxPower(bf.GetLength()), BitField(bf)
 }
 
 TSet::operator TBitField(){
-    TBitField Temp(MaxPower);
-    Temp = BitField;
+    TBitField Temp(this->BitField);
     return Temp;
 }
 
@@ -52,14 +51,15 @@ void TSet::InsElem(const int Elem) // включение элемента мно
 void TSet::DelElem(const int Elem) // исключение элемента множества
 {
   if(Elem < 0 || Elem > MaxPower) throw("ancorrect_index");
-    if (BitField.GetBit(Elem))
-        BitField.ClrBit(Elem);
+    BitField.ClrBit(Elem);
 }
 
 // теоретико-множественные операции
 
 TSet& TSet::operator=(const TSet &s) // присваивание
 {
+    if (*this == s) return *this;
+
     MaxPower = s.MaxPower;
     BitField = s.BitField;
     return *this;
@@ -67,7 +67,7 @@ TSet& TSet::operator=(const TSet &s) // присваивание
 
 int TSet::operator==(const TSet &s) const // сравнение
 {
-    if ((MaxPower == s.MaxPower) && (BitField == s.BitField))
+    if (BitField == s.BitField)
         return 1;
     else
         return 0;
@@ -83,8 +83,7 @@ int TSet::operator!=(const TSet &s) const // сравнение
 
 TSet TSet::operator+(const TSet &s) // объединение
 {
-    TSet Temp(max(MaxPower, s.MaxPower));
-    Temp.BitField = BitField | s.BitField;
+    TSet Temp(BitField | s.BitField);
     return Temp;
 }
 
@@ -106,28 +105,21 @@ TSet TSet::operator-(const int Elem) // разность с элементом
 
 TSet TSet::operator*(const TSet &s) // пересечение
 {
-    TSet Temp(max(MaxPower, s.MaxPower));
-    Temp.BitField = BitField & s.BitField;
+    TSet Temp(BitField & s.BitField);
     return Temp;
 }
 
 TSet TSet::operator~(void) // дополнение
 {
-    BitField = ~BitField;
-    return *this;
+    TSet Temp(~(this->BitField));
+    return Temp;
 }
 
 // перегрузка ввода/вывода
 
 istream &operator>>(istream &istr, TSet &s) // ввод
 {
-    string temp;
-    istr >> temp;
-    s.MaxPower = temp.length();
-    s.BitField = TBitField(temp.length());
-    for (int i = 0; i < temp.length(); i++)
-        if (temp[i] == '1')
-            s.BitField.SetBit(i);
+    istr >> s.BitField;
     return istr;
 }
 
