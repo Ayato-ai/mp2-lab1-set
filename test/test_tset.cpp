@@ -2,394 +2,296 @@
 
 #include <gtest.h>
 
-TEST(TSet, can_get_max_power_set)
-{
-  const int size = 5;
-  TSet set(size);
+class TSet_Test : public ::testing::Test {
+protected:
+    void SetUp() {
+        set = new TSet(4);
 
-  EXPECT_EQ(size, set.GetMaxPower());
+        set1_s4 = new TSet(4);
+        set2_s4 = new TSet(4);
+        set3_s4 = new TSet(4);
+
+        set2_s6 = new TSet(6);
+        set3_s6 = new TSet(6);
+    }
+    void TearDown() {
+    }
+    TSet* set;
+    TSet* set1_s4;
+    TSet* set2_s4;
+    TSet* set3_s4;
+    TSet* set2_s6;
+    TSet* set3_s6;
+};
+
+TEST_F(TSet_Test, can_get_max_power_set) {
+    EXPECT_EQ(4, set->GetMaxPower());
 }
 
-TEST(TSet, can_insert_non_existing_element)
-{
-  const int size = 5, k = 3;
-  TSet set(size);
-  set.InsElem(k);
+TEST_F(TSet_Test, can_insert_non_existing_element) {
+    set->InsElem(3);
 
-  EXPECT_NE(set.IsMember(k), 0);
+    EXPECT_EQ(set->IsMember(3), 1);
 }
 
-TEST(TSet, can_insert_existing_element)
-{
-  const int size = 5;
-  const int k = 3;
-  TSet set(size);
-  set.InsElem(k);
-  set.InsElem(k);
+TEST_F(TSet_Test, can_insert_existing_element) {
+    set->InsElem(3);
+    set->InsElem(3);
 
-  EXPECT_NE(set.IsMember(k), 0);
+    EXPECT_EQ(set->IsMember(3), 1);
+}
+TEST_F(TSet_Test, can_delete_non_existing_element) {
+    set->DelElem(3);
+
+    EXPECT_EQ(set->IsMember(3), 0);
 }
 
-TEST(TSet, can_delete_non_existing_element)
-{
-  const int size = 5, k = 3;
-  TSet set(size);
-  set.DelElem(k);
+TEST_F(TSet_Test, can_delete_existing_element) {
 
-  EXPECT_EQ(set.IsMember(k), 0);
+    set->InsElem(3);
+    EXPECT_GT(set->IsMember(3), 0);
+
+    set->DelElem(3);
+    EXPECT_EQ(set->IsMember(3), 0);
 }
 
-TEST(TSet, can_delete_existing_element)
-{
-  const int size = 5, k = 3;
-  TSet set(size);
-
-  set.InsElem(k);
-  EXPECT_GT(set.IsMember(k), 0);
-
-  set.DelElem(k);
-  EXPECT_EQ(set.IsMember(k), 0);
+TEST_F(TSet_Test, compare_two_sets_of_non_equal_sizes) {
+    EXPECT_EQ(1, set1_s4 != set2_s6);
 }
 
-TEST(TSet, compare_two_sets_of_non_equal_sizes)
-{
-  const int size1 = 4, size2 = 6;
-  TSet set1(size1), set2(size2);
+TEST_F(TSet_Test, compare_two_equal_sets) {
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(3);
+    set2_s4->InsElem(1);
+    set2_s4->InsElem(3);
 
-  EXPECT_EQ(1, set1 != set2);
+    EXPECT_EQ(*set1_s4, *set2_s4);
 }
 
-TEST(TSet, compare_two_equal_sets)
-{
-  const int size = 4;
-  TSet set1(size), set2(size);
-  // set1 = set2 = {1, 3}
-  set1.InsElem(1);
-  set1.InsElem(3);
-  set2.InsElem(1);
-  set2.InsElem(3);
+TEST_F(TSet_Test, compare_two_non_equal_sets) {
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(3);
+    set2_s4->InsElem(1);
+    set2_s4->InsElem(2);
 
-  EXPECT_EQ(set1, set2);
+    EXPECT_EQ(1, set1_s4 != set2_s4);
 }
 
-TEST(TSet, compare_two_non_equal_sets)
-{
-  const int size = 4;
-  TSet set1(size), set2(size);
-  // set1 = {1, 3}
-  set1.InsElem(1);
-  set1.InsElem(3);
-  // set2 = {1, 2}
-  set2.InsElem(1);
-  set2.InsElem(2);
+TEST_F(TSet_Test, can_assign_set_of_equal_size) {
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(3);
+    *set2_s4 = *set1_s4;
 
-  EXPECT_EQ(1, set1 != set2);
+    EXPECT_EQ(*set1_s4, *set2_s4);
 }
 
-TEST(TSet, can_assign_set_of_equal_size)
-{
-  const int size = 4;
-  TSet set1(size), set2(size);
-  // set1 = {1, 3}
-  set1.InsElem(1);
-  set1.InsElem(3);
-  set2 = set1;
+TEST_F(TSet_Test, can_assign_set_of_greater_size) {
+    set2_s6->InsElem(1);
+    set2_s6->InsElem(3);
+    *set1_s4 = *set2_s6;
 
-  EXPECT_EQ(set1, set2);
+    EXPECT_EQ(*set1_s4, *set2_s6);
 }
 
-TEST(TSet, can_assign_set_of_greater_size)
-{
-  const int size1 = 4, size2 = 6;
-  TSet set1(size1), set2(size2);
-  // set1 = {1, 3}
-  set1.InsElem(1);
-  set1.InsElem(3);
-  set2 = set1;
+TEST_F(TSet_Test, can_assign_set_of_less_size) {
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(3);
+    *set2_s6 = *set1_s4;
 
-  EXPECT_EQ(set1, set2);
+    EXPECT_EQ(*set1_s4, *set2_s6);
 }
 
-TEST(TSet, can_assign_set_of_less_size)
-{
-  const int size1 = 6, size2 = 4;
-  TSet set1(size1), set2(size2);
-  // set1 = {1, 3, 5}
-  set1.InsElem(1);
-  set1.InsElem(3);
-  set1.InsElem(5);
-  set2 = set1;
+TEST_F(TSet_Test, can_insert_non_existing_element_using_plus_operator) {
+    const int k = 3;
+    *set1_s4 = *set1_s4 + k;
 
-  EXPECT_EQ(set1, set2);
+    EXPECT_EQ(1, set1_s4->IsMember(k));
 }
 
-TEST(TSet, can_insert_non_existing_element_using_plus_operator)
-{
-  const int size = 4;
-  const int k = 3;
-  TSet set(size), updatedSet(size);
-  set.InsElem(0);
-  set.InsElem(2);
-  updatedSet = set + k;
+TEST_F(TSet_Test, throws_when_insert_non_existing_element_out_of_range_using_plus_operator) {
+    const int k = 6;
 
-  EXPECT_NE(0, updatedSet.IsMember(k));
+    ASSERT_ANY_THROW(*set1_s4 = *set + k);
 }
 
-TEST(TSet, throws_when_insert_non_existing_element_out_of_range_using_plus_operator)
-{
-  const int size = 4;
-  const int k = 6;
-  TSet set(size), updatedSet(size);
-  set.InsElem(0);
-  set.InsElem(2);
+TEST_F(TSet_Test, can_insert_existing_element_using_plus_operator) {
+    const int k = 3;
+    *set1_s4 = *set + k;
 
-  ASSERT_ANY_THROW(updatedSet = set + k);
+    EXPECT_EQ(1, set->IsMember(k));
 }
 
-TEST(TSet, can_insert_existing_element_using_plus_operator)
-{
-  const int size = 4;
-  const int k = 3;
-  TSet set(size), updatedSet(size);
-  set.InsElem(0);
-  set.InsElem(k);
-  updatedSet = set + k;
+TEST_F(TSet_Test, check_size_of_the_combination_of_two_sets_of_equal_size) {
+    // set = {1, 2, 3}
+    set->InsElem(1);
+    set->InsElem(2);
+    set->InsElem(3);
+    // set1_s4 = {0, 1, 2}
+    set1_s4->InsElem(0);
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(2);
+    *set2_s4 = *set1_s4 + *set;
 
-  EXPECT_NE(0, set.IsMember(k));
+    EXPECT_EQ(4, set2_s4->GetMaxPower());
 }
 
-TEST(TSet, check_size_of_the_combination_of_two_sets_of_equal_size)
-{
-  const int size = 5;
-  TSet set1(size), set2(size), set3(size);
-  // set1 = {1, 2, 4}
-  set1.InsElem(1);
-  set1.InsElem(2);
-  set1.InsElem(4);
-  // set2 = {0, 1, 2}
-  set2.InsElem(0);
-  set2.InsElem(1);
-  set2.InsElem(2);
-  set3 = set1 + set2;
+TEST_F(TSet_Test, can_combine_two_sets_of_equal_size) {
+    // set1_s4 = {1, 2}
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(2);
+    // set2_s4 = {0, 1}
+    set2_s4->InsElem(0);
+    set2_s4->InsElem(1);
+    *set3_s4 = *set1_s4 + *set2_s4;
+    // set3_s4 = {0, 1, 2}
+    set->InsElem(0);
+    set->InsElem(1);
+    set->InsElem(2);
 
-  EXPECT_EQ(size, set3.GetMaxPower());
+    EXPECT_EQ(*set3_s4, *set);
 }
 
-TEST(TSet, can_combine_two_sets_of_equal_size)
-{
-  const int size = 5;
-  TSet set1(size), set2(size), set3(size), expSet(size);
-  // set1 = {1, 2, 4}
-  set1.InsElem(1);
-  set1.InsElem(2);
-  set1.InsElem(4);
-  // set2 = {0, 1, 2}
-  set2.InsElem(0);
-  set2.InsElem(1);
-  set2.InsElem(2);
-  set3 = set1 + set2;
-  // expSet = {0, 1, 2, 4}
-  expSet.InsElem(0);
-  expSet.InsElem(1);
-  expSet.InsElem(2);
-  expSet.InsElem(4);
+TEST_F(TSet_Test, check_size_changes_of_the_combination_of_two_sets_of_non_equal_size) {
+    // set1_s4 = {1, 2, 3}
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(2);
+    set1_s4->InsElem(3);
+    // set2_s6 = {0, 1, 2}
+    set2_s6->InsElem(0);
+    set2_s6->InsElem(1);
+    set2_s6->InsElem(2);
+    *set = *set2_s6 + *set1_s4;
 
-  EXPECT_EQ(expSet, set3);
+    EXPECT_EQ(6, set->GetMaxPower());
 }
 
-TEST(TSet, check_size_changes_of_the_combination_of_two_sets_of_non_equal_size)
-{
-  const int size1 = 5, size2 = 7;
-  TSet set1(size1), set2(size2), set3(size1);
-  // set1 = {1, 2, 4}
-  set1.InsElem(1);
-  set1.InsElem(2);
-  set1.InsElem(4);
-  // set2 = {0, 1, 2}
-  set2.InsElem(0);
-  set2.InsElem(1);
-  set2.InsElem(2);
-  set3 = set1 + set2;
+TEST_F(TSet_Test, can_combine_two_sets_of_non_equal_size) {
+    // set1 = {1, 2, 3}
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(2);
+    set1_s4->InsElem(3);
+    // set2 = {0, 1, 2}
+    set2_s6->InsElem(0);
+    set2_s6->InsElem(1);
+    set2_s6->InsElem(2);
+    *set = *set1_s4 + *set2_s6;
+    // expSet = {0, 1, 2, 3}
+    set3_s6->InsElem(0);
+    set3_s6->InsElem(1);
+    set3_s6->InsElem(2);
+    set3_s6->InsElem(3);
 
-  EXPECT_EQ(size2, set3.GetMaxPower());
+    EXPECT_EQ(*set, *set3_s6);
 }
 
-TEST(TSet, can_combine_two_sets_of_non_equal_size)
-{
-  const int size1 = 5, size2 = 7;
-  TSet set1(size1), set2(size2), set3(size1), expSet(size2);
-  // set1 = {1, 2, 4}
-  set1.InsElem(1);
-  set1.InsElem(2);
-  set1.InsElem(4);
-  // set2 = {0, 1, 2, 6}
-  set2.InsElem(0);
-  set2.InsElem(1);
-  set2.InsElem(2);
-  set2.InsElem(6);
-  set3 = set1 + set2;
-  // expSet = {0, 1, 2, 4, 6}
-  expSet.InsElem(0);
-  expSet.InsElem(1);
-  expSet.InsElem(2);
-  expSet.InsElem(4);
-  expSet.InsElem(6);
+TEST_F(TSet_Test, can_intersect_two_sets_of_equal_size) {
+    // set1 = {1, 2, 3}
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(2);
+    set1_s4->InsElem(3);
+    // set2 = {0, 1, 2}
+    set2_s4->InsElem(0);
+    set2_s4->InsElem(1);
+    set2_s4->InsElem(2);
+    *set3_s4 = *set1_s4 * *set2_s4;
+    // expSet = {1, 2}
+    set->InsElem(1);
+    set->InsElem(2);
 
-  EXPECT_EQ(expSet, set3);
+    EXPECT_EQ(*set, *set3_s4);
 }
 
-TEST(TSet, can_intersect_two_sets_of_equal_size)
-{
-  const int size = 5;
-  TSet set1(size), set2(size), set3(size), expSet(size);
-  // set1 = {1, 2, 4}
-  set1.InsElem(1);
-  set1.InsElem(2);
-  set1.InsElem(4);
-  // set2 = {0, 1, 2}
-  set2.InsElem(0);
-  set2.InsElem(1);
-  set2.InsElem(2);
-  set3 = set1 * set2;
-  // expSet = {1, 2}
-  expSet.InsElem(1);
-  expSet.InsElem(2);
+TEST_F(TSet_Test, can_intersect_two_sets_of_non_equal_size) {
+    // set1 = {1, 2, 3}
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(2);
+    set1_s4->InsElem(3);
+    // set2 = {0, 1, 2, 3, 5}
+    set2_s6->InsElem(0);
+    set2_s6->InsElem(1);
+    set2_s6->InsElem(2);
+    set2_s6->InsElem(3);
+    set2_s6->InsElem(5);
 
-  EXPECT_EQ(expSet, set3);
+    // expSet = {1, 2, 3}
+    set3_s6->InsElem(1);
+    set3_s6->InsElem(2);
+    set3_s6->InsElem(3);
+
+    EXPECT_EQ(*set3_s6, *set1_s4 * *set2_s6);
 }
 
-TEST(TSet, can_intersect_two_sets_of_non_equal_size)
-{
-  const int size1 = 5, size2 = 7;
-  TSet set1(size1), set2(size2), set3(size1), expSet(size2);
-  // set1 = {1, 2, 4}
-  set1.InsElem(1);
-  set1.InsElem(2);
-  set1.InsElem(4);
-  // set2 = {0, 1, 2, 4, 6}
-  set2.InsElem(0);
-  set2.InsElem(1);
-  set2.InsElem(2);
-  set2.InsElem(4);
-  set2.InsElem(6);
-  set3 = set1 * set2;
-  // expSet = {1, 2, 4}
-  expSet.InsElem(1);
-  expSet.InsElem(2);
-  expSet.InsElem(4);
+TEST_F(TSet_Test, check_negation_operator) {
+    // set = {1, 3}
+    set->InsElem(1);
+    set->InsElem(3);
+    *set1_s4 = ~*set;
+    // set2_s4 = {0, 2}
+    set2_s4->InsElem(0);    
+    set2_s4->InsElem(2);
 
-  EXPECT_EQ(expSet, set3);
+    EXPECT_EQ(*set2_s4, *set1_s4);
 }
-
-TEST(TSet, check_negation_operator)
-{
-  const int size = 4;
-  TSet set(size), set1(size), expSet(size);
-  // set1 = {1, 3}
-  set.InsElem(1);
-  set.InsElem(3);
-  set1 = ~set;
-  // expSet = {0, 2}
-  expSet.InsElem(0);
-  expSet.InsElem(2);
-
-  EXPECT_EQ(expSet, set1);
+TEST_F(TSet_Test, throws_when_negative_index_in_IsMember) {
+  ASSERT_ANY_THROW(set->IsMember(-3));
 }
-TEST(TSet, throws_when_negative_index_in_IsMember)
-{
-  TSet set(4);
-
-  ASSERT_ANY_THROW(set.IsMember(-3));
+TEST_F(TSet_Test, throws_when_negative_index_in_InsElem) {
+  ASSERT_ANY_THROW(set->InsElem(-3));
 }
-TEST(TSet, throws_when_negative_index_in_InsElem)
-{
-  TSet set(4);
-
-  ASSERT_ANY_THROW(set.InsElem(-3));
+TEST_F(TSet_Test, throws_when_negative_index_in_DelElem) {
+  ASSERT_ANY_THROW(set->DelElem(-3));
 }
-TEST(TSet, throws_when_negative_index_in_DelElem)
-{
-  TSet set(4);
+TEST_F(TSet_Test, correct_IsMember) {
+    set->InsElem(2);
 
-  ASSERT_ANY_THROW(set.DelElem(-3));
+    EXPECT_EQ(set->IsMember(2), 1);
 }
-TEST(TSet, correct_IsMember)
-{
-  TSet set(5);
+TEST_F(TSet_Test, correct_InsElem) {
+    set->InsElem(2);
+    set->DelElem(2);
 
-  set.InsElem(2);
-
-  EXPECT_EQ(set.IsMember(2), 1);
-  EXPECT_EQ(set.IsMember(3), 0);
+    EXPECT_EQ(set->IsMember(2), 0);
 }
-TEST(TSet, correct_InsElem)
-{
-  TSet set(5);
+TEST_F(TSet_Test, correct_DelElem) {
+    set->DelElem(2);
 
-  set.InsElem(2);
-
-  EXPECT_EQ(set.IsMember(2), 1);
+    EXPECT_EQ(set->IsMember(2), 0);
 }
-TEST(TSet, correct_DelElem)
-{
-  TSet set(5);
+TEST_F(TSet_Test, associativity_operator_and) {
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(3);
+    set->InsElem(1);
+    set->InsElem(2);
 
-  set.DelElem(2);
-
-  EXPECT_EQ(set.IsMember(2), 0);
+  EXPECT_EQ(*set * *set1_s4, *set1_s4 * *set);
 }
-TEST(TSet, associativity_operator_and)
-{
-  TSet set1(5), set2(5);
+TEST_F(TSet_Test, associativity_operator_or) {
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(3);
+    set->InsElem(1);
+    set->InsElem(2);
 
-  set1.InsElem(1);
-  set1.InsElem(3);
-  set2.InsElem(1);
-  set2.InsElem(2);
-
-  EXPECT_EQ(set1 * set2, set2 * set1);
+    EXPECT_EQ(*set + *set1_s4, *set1_s4 + *set);
 }
-TEST(TSet, associativity_operator_or)
-{
-  TSet set1(5), set2(5);
+TEST_F(TSet_Test, associativity_operator_equality) {
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(3);
+    set->InsElem(1);
+    set->InsElem(2);
 
-  set1.InsElem(1);
-  set1.InsElem(3);
-  set2.InsElem(1);
-  set2.InsElem(2);
-
-  EXPECT_EQ(set1 + set2, set2 + set1);
+    EXPECT_EQ(*set == *set1_s4, *set1_s4 == *set);
 }
-TEST(TSet, associativity_operator_equality)
-{
-  TSet set1(5), set2(5);
+TEST_F(TSet_Test, associativity_operator_inequality) {
+    set1_s4->InsElem(1);
+    set1_s4->InsElem(3);
+    set->InsElem(1);
+    set->InsElem(2);
 
-  set1.InsElem(1);
-  set1.InsElem(3);
-  set2.InsElem(1);
-  set2.InsElem(2);
-
-  EXPECT_EQ(set1 == set2, set2 == set1);
+    EXPECT_EQ(*set != *set1_s4, *set1_s4 != *set);
 }
-TEST(TSet, associativity_operator_inequality)
-{
-  TSet set1(5), set2(5);
+TEST_F(TSet_Test, correct_operator_negative_and_operator_and) {
+    set->InsElem(2);
+    *set1_s4 = ~*set;
 
-  set1.InsElem(1);
-  set2.InsElem(3);
-  set2.InsElem(1);
-  set2.InsElem(2);
-
-  EXPECT_EQ(set1 != set2, set2 != set1);
+    EXPECT_EQ(*set1_s4 + 2, ~*set3_s4);
 }
-TEST(TSet, correct_operator_negative_and_operator_and)
-{
-  TSet set(5), neg_set(5), set_full(5);
-
-  set.InsElem(2);
-  set_full = ~set_full;
-  neg_set = ~set;
-
-  EXPECT_EQ(neg_set + 2, set_full);
-}
-
